@@ -5,11 +5,9 @@ import time
 import data
 import secret
 
-
-patientListIterator = 0
-
 # newestDateformat = datetime.strptime('2001-01-24', '%Y-%m-%d')
 
+patientIdArrayLength = 1
 
 # Open the browser to the SD page
 chrome_path = r"/usr/local/bin/chromedriver"
@@ -57,9 +55,9 @@ def filterRadiologyReports():
 
 def iterativePatientResults():
   #Filter by PatientId
-  for i in data.patientIdArray:
+  for i in range(patientIdArrayLength): 
     searchPatient = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[1]/div/div[2]/div/div/input')
-    searchPatient.send_keys(i)
+    searchPatient.send_keys(data.patientIdArray[i])
     time.sleep(5)
     patientRow = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[1]/div/div[3]/div[1]/table/tbody/tr')
     patientRow.click()
@@ -67,24 +65,25 @@ def iterativePatientResults():
     # filterRadiologyReports()
     # Get the dates of all report sections so that you can compare them properly
     reportHeaders = driver.find_elements_by_class_name('doc-content')
+    reportHeadersLength = len(reportHeaders)
     # the below variable is storing the date of the patient's first operation
-    firstSurgeryDate = data.firstSurgeryDateArray[patientListIterator]
+    firstSurgeryDate = data.firstSurgeryDateArray[i]
     # the below variable will store the header text and the index position
     # firstSurgeryDivSection = ''
     firstSurgeryDivIndex = 0
-    for i in reportHeaders:
+    for i in range(reportHeadersLength):
       allText = reportHeaders[i].text
       date = allText[0:10]
-      dateFormat = datetime.strptime(date, '%Y-%m-%d')
-      if dateFormat == datetime.strptime(firstSurgeryDate, '%m-%d-%Y'):
+      reportType = allText[-16:]
+      print(reportType)
+      dateFormat = time.strptime(date, '%Y-%m-%d')
+      if dateFormat == time.strptime(firstSurgeryDate, '%m-%d-%y') and reportType == 'OPERATIVE REPORT':
         firstSurgeryDivSection = reportHeaders[i]
         firstSurgeryDivIndex = i
         break
     reportContent = driver.find_elements_by_class_name('doc-content-div')
-    firstSurgeryNotes = reportContent[firstSurgeryIndex]
-    print(firstSurgeryNotes)
-    patientListIterator = patientListIterator + 1
-    print(patientListIterator)
+    firstSurgeryNotes = reportContent[firstSurgeryDivIndex]
+    print(firstSurgeryNotes.text)
 
 
 iterativePatientResults()
