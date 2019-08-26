@@ -1,2 +1,0 @@
-username = 'hatchejb'
-password = 'vumcID$$'
