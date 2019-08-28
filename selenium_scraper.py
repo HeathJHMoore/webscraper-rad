@@ -4,11 +4,28 @@ from bs4 import BeautifulSoup
 import time
 import data
 import secret
+import pandas
 
 # newestDateformat = datetime.strptime('2001-01-24', '%Y-%m-%d')
 
-patientIdArrayLength = 1
-aggregatePatientInfo = []
+patientIdArrayLength = len(data.testPatientArray)
+
+
+aggregatePatientInfo = {
+  "patientId" : [],
+  "patientFirstSurgeryDate" : [],
+  "firstOperationHeader" : [],
+  "firstOperationNotes" : [],
+  "postOpRadReport1Notes" : [],
+  "postOpRadReport2Notes" : [],
+  "postOpRadReport3Notes" : [],
+  "patientNextSurgeryDate" : [],
+  "nextOperationHeader" : [],
+  "nextOperationNotes" : [],
+  "preOpRadReport1Notes" : [],
+  "preOpRadReport2Notes" : [],
+  "preOpRadReport3Notes" :[]
+}
 
 # Open the browser to the SD page
 chrome_path = r"/usr/local/bin/chromedriver"
@@ -25,16 +42,16 @@ first_submit_button = driver.find_element_by_xpath('//*[@id="sddiscover-12078517
 vunetid.send_keys(secret.username)
 password.send_keys(secret.password)
 first_submit_button.click()
-time.sleep(8)
+time.sleep(15)
 
 
 # Choose Recurrence Database
 recentDataSets = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div[2]/div/div/div/div/div/div/div[2]/div[1]/table/tbody/tr[1]/td[1]/div')
 recentDataSets.click()
-time.sleep(3)
+time.sleep(8)
 recurrence = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div[2]/div/div/div/div/div/div/div[2]/div[1]/table/tbody/tr[2]/td[1]')
 recurrence.click()
-time.sleep(5)
+time.sleep(8)
 reviewSetResults = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/div[3]/div/div/div/div/div/div[3]/div/div/div/div/div[2]/div/div/div/table/tbody/tr[1]/td[3]/div')
 reviewSetResults.click()
 time.sleep(10)
@@ -46,10 +63,10 @@ def firstfilterRadiologyReports():
   time.sleep(5)
   openFilterDropdownButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[1]/div/div[2]/div')
   openFilterDropdownButton.click()
-  time.sleep(2)
+  time.sleep(5)
   radiologyReportsOption = driver.find_element_by_xpath('//*[@id="VAADIN_COMBOBOX_OPTIONLIST"]/div/div[2]/table/tbody/tr[11]')
   radiologyReportsOption.click()
-  time.sleep(2)
+  time.sleep(5)
   applyFilter = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[1]/div')
   applyFilter.click()
   time.sleep(5)
@@ -59,10 +76,10 @@ def secondfilterRadiologyReports():
   time.sleep(5)
   openFilterDropdownButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[1]/div/div[2]/div')
   openFilterDropdownButton.click()
-  time.sleep(2)
+  time.sleep(5)
   radiologyReportsOption = driver.find_element_by_xpath('//*[@id="VAADIN_COMBOBOX_OPTIONLIST"]/div/div[2]/table/tbody/tr[11]')
   radiologyReportsOption.click()
-  time.sleep(2)
+  time.sleep(5)
   applyFilter = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[1]/div')
   applyFilter.click()
   time.sleep(5)
@@ -70,32 +87,52 @@ def secondfilterRadiologyReports():
 def iterativePatientResults():
   #Filter by PatientId
   for i in range(patientIdArrayLength): 
+    if i > 0:
+      clearFilterButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[2]/div')
+      time.sleep(1)
+      clearFilterButton.click()
     searchPatient = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[1]/div/div[2]/div/div/input')
+    searchPatient.clear()
+    time.sleep(2)
     searchPatient.send_keys(data.patientIdArray[i])
+
+    # adding patientId to data
+    aggregatePatientInfo["patientId"].append(data.patientIdArray[i])
+
     time.sleep(5)
     patientRow = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[1]/div/div[3]/div[1]/table/tbody/tr')
     patientRow.click()
+    time.sleep(5)
     # we may actually not want to filter for reports since we need to do everything relative to all entries
     # filterRadiologyReports()
-    # Get the dates of all report sections so that you can compare them properly
-    reportHeaders = driver.find_elements_by_class_name('doc-content')
-    reportHeadersLength = len(reportHeaders)
     # the below variable is storing the date of the patient's first operation
     firstSurgeryDate = data.firstSurgeryDateArray[i]
+    print(firstSurgeryDate)
+    # the below adds the first surgery date to the aggregate patient dataframe
+    aggregatePatientInfo["patientFirstSurgeryDate"].append(firstSurgeryDate)
     # the below variable will store the header text and the index position
-    # firstSurgeryDivSection = ''
+    firstSurgeryHeader = ''
     firstSurgeryDivIndex = 0
+     # Get the dates of all report sections so that you can compare them properly
+    reportHeaders = driver.find_elements_by_class_name('doc-content')
+    time.sleep(3)
+    reportHeadersLength = len(reportHeaders)
+    time.sleep(3)
     for firstReportHeaderIterator in range(reportHeadersLength):
       allText = reportHeaders[firstReportHeaderIterator].text
       date = allText[0:10]
       reportType = allText[-16:]
       dateFormat = time.strptime(date, '%Y-%m-%d')
       if dateFormat == time.strptime(firstSurgeryDate, '%m-%d-%y') and reportType == 'OPERATIVE REPORT':
-        # firstSurgeryDivSection = reportHeaders[i]
+        firstSurgeryHeader = reportHeaders[firstReportHeaderIterator].text
         firstSurgeryDivIndex = firstReportHeaderIterator
         break
     reportContent = driver.find_elements_by_class_name('doc-content-div')
     firstSurgeryNotes = reportContent[firstSurgeryDivIndex].text
+
+    # adding first surgery header and notes to data
+    aggregatePatientInfo["firstOperationHeader"].append(firstSurgeryHeader)
+    aggregatePatientInfo["firstOperationNotes"].append(firstSurgeryNotes)
 
     # start filtering radiology reports
     if i == 0:
@@ -119,15 +156,38 @@ def iterativePatientResults():
           class firstRadiologyReportInfo:
             reportHeader = radiologyReportText
             reportIndex = radiologyReportHeaderIterator
-            reportNotes = radiologyReportNotes[i].text
+            reportNotes = radiologyReportNotes[radiologyReportHeaderIterator].text
           firstThreeRadiologyReports.append(firstRadiologyReportInfo)
         else:
           break
     
+    for yo in firstThreeRadiologyReports:
+      print(yo.reportNotes)
+
+    # this code accounts for a patient having less than 3 radiology reports
+    # it goes in and adds blank report to get a patients total up to 3 if need be
+    firstRadReportsLength = len(firstThreeRadiologyReports)
+    if (firstRadReportsLength < 3):
+      numberToAdd = 3 - firstRadReportsLength
+      for adds in range(numberToAdd):
+        class blankRadiologyReportInfo:
+           reportHeader = ''
+           reportIndex = ''
+           reportNotes = ''
+        firstThreeRadiologyReports.append(blankRadiologyReportInfo)
+    
+
+    aggregatePatientInfo["postOpRadReport1Notes"].append(firstThreeRadiologyReports[0].reportNotes)
+    aggregatePatientInfo["postOpRadReport2Notes"].append(firstThreeRadiologyReports[1].reportNotes)
+    aggregatePatientInfo["postOpRadReport3Notes"].append(firstThreeRadiologyReports[2].reportNotes)
+    
+
+    
     # This begins the fining of the second surgery notes
     nextSurgeryDate = data.nextSurgeryDateArray[i]
+    aggregatePatientInfo["patientNextSurgeryDate"].append(nextSurgeryDate)
     nextSurgeryDivIndex = 0
-    print(nextSurgeryDate)
+    nextSurgeryHeader = ''
     clearFilterButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[2]/div')
     clearFilterButton.click()
     time.sleep(5)
@@ -139,11 +199,15 @@ def iterativePatientResults():
       reportType = allText[-16:]
       dateFormat = time.strptime(date, '%Y-%m-%d')
       if dateFormat == time.strptime(nextSurgeryDate, '%m-%d-%y') and reportType == 'OPERATIVE REPORT':
-        # nextSurgeryDivSection = reportHeaders[i]
+        nextSurgeryHeader = reportHeaders[secondReportHeaderIterator].text
         nextSurgeryDivIndex = secondReportHeaderIterator
         break
     reportContent = driver.find_elements_by_class_name('doc-content-div')    
     nextSurgeryNotes = reportContent[nextSurgeryDivIndex].text
+
+
+    aggregatePatientInfo["nextOperationHeader"].append(nextSurgeryHeader)
+    aggregatePatientInfo["nextOperationNotes"].append(nextSurgeryNotes)
 
 
 
@@ -166,26 +230,36 @@ def iterativePatientResults():
           class lastRadiologyReportInfo:
             reversedReportHeader = reveresdRadiologyReportText
             reversedReportIndex = reversedRadiologyReportHeaderIterator
-            reversedReportNotes = reversedRadiologyReportNotes[i].text
+            reversedReportNotes = reversedRadiologyReportNotes[reversedRadiologyReportHeaderIterator].text
           LastThreeRadiologyReports.append(lastRadiologyReportInfo)
         else:
           break
-    for it in LastThreeRadiologyReports:
-      print(it.reversedReportHeader)
-      print(it.reversedReportIndex)
-      print(it.reversedReportNotes)
+  
+
+    # this code accounts for a patient having less than 3 radiology reports
+    # it goes in and adds blank report to get a patients total up to 3 if need be
+    LastRadReportsLength = len(LastThreeRadiologyReports)
+    if (LastRadReportsLength < 3):
+      numberToAdd = 3 - LastRadReportsLength
+      for adds in range(numberToAdd):
+        class blankRadiologyReportInfo:
+           reversedReportHeader = ''
+           reversedReportIndex = ''
+           reversedReportNotes = ''
+        LastThreeRadiologyReports.append(blankRadiologyReportInfo)
+
     
+    aggregatePatientInfo["preOpRadReport1Notes"].append(LastThreeRadiologyReports[0].reversedReportNotes)
+    aggregatePatientInfo["preOpRadReport2Notes"].append(LastThreeRadiologyReports[1].reversedReportNotes)
+    aggregatePatientInfo["preOpRadReport3Notes"].append(LastThreeRadiologyReports[2].reversedReportNotes)
 
-
-
-
-
-
-
-    
 
 
 iterativePatientResults()
+
+df = pandas.DataFrame(aggregatePatientInfo)
+
+df.to_excel("test_output.xlsx")
 
 
 
