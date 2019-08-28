@@ -98,6 +98,7 @@ def iterativePatientResults():
     # filterRadiologyReports()
     # the below variable is storing the date of the patient's first operation
     firstSurgeryDate = data.firstSurgeryDateArray[i]
+    print(firstSurgeryDate)
     # the below adds the first surgery date to the aggregate patient dataframe
     aggregatePatientInfo["patientFirstSurgeryDate"].append(firstSurgeryDate)
     # the below variable will store the header text and the index position
@@ -114,7 +115,7 @@ def iterativePatientResults():
       reportType = allText[-16:]
       dateFormat = time.strptime(date, '%Y-%m-%d')
       if dateFormat == time.strptime(firstSurgeryDate, '%m-%d-%y') and reportType == 'OPERATIVE REPORT':
-        firstSurgeryHeader = reportHeaders[i].text
+        firstSurgeryHeader = reportHeaders[firstReportHeaderIterator].text
         firstSurgeryDivIndex = firstReportHeaderIterator
         break
     reportContent = driver.find_elements_by_class_name('doc-content-div')
@@ -146,7 +147,7 @@ def iterativePatientResults():
           class firstRadiologyReportInfo:
             reportHeader = radiologyReportText
             reportIndex = radiologyReportHeaderIterator
-            reportNotes = radiologyReportNotes[i].text
+            reportNotes = radiologyReportNotes[radiologyReportHeaderIterator].text
           firstThreeRadiologyReports.append(firstRadiologyReportInfo)
         else:
           break
@@ -189,7 +190,7 @@ def iterativePatientResults():
       reportType = allText[-16:]
       dateFormat = time.strptime(date, '%Y-%m-%d')
       if dateFormat == time.strptime(nextSurgeryDate, '%m-%d-%y') and reportType == 'OPERATIVE REPORT':
-        nextSurgeryHeader = reportHeaders[i].text
+        nextSurgeryHeader = reportHeaders[secondReportHeaderIterator].text
         nextSurgeryDivIndex = secondReportHeaderIterator
         break
     reportContent = driver.find_elements_by_class_name('doc-content-div')    
@@ -220,7 +221,7 @@ def iterativePatientResults():
           class lastRadiologyReportInfo:
             reversedReportHeader = reveresdRadiologyReportText
             reversedReportIndex = reversedRadiologyReportHeaderIterator
-            reversedReportNotes = reversedRadiologyReportNotes[i].text
+            reversedReportNotes = reversedRadiologyReportNotes[reversedRadiologyReportHeaderIterator].text
           LastThreeRadiologyReports.append(lastRadiologyReportInfo)
         else:
           break
@@ -249,7 +250,7 @@ iterativePatientResults()
 
 df = pandas.DataFrame(aggregatePatientInfo)
 
-df.to_excel("output2.xlsx")
+df.to_excel("output3.xlsx")
 
 
 
