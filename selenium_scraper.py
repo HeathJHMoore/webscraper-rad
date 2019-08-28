@@ -8,7 +8,9 @@ import pandas
 
 # newestDateformat = datetime.strptime('2001-01-24', '%Y-%m-%d')
 
-patientIdArrayLength = 1
+patientIdArrayLength = len(data.testPatientArray)
+
+
 aggregatePatientInfo = {
   "patientId" : [],
   "patientFirstSurgeryDate" : [],
@@ -40,16 +42,16 @@ first_submit_button = driver.find_element_by_xpath('//*[@id="sddiscover-12078517
 vunetid.send_keys(secret.username)
 password.send_keys(secret.password)
 first_submit_button.click()
-time.sleep(8)
+time.sleep(15)
 
 
 # Choose Recurrence Database
 recentDataSets = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div[2]/div/div/div/div/div/div/div[2]/div[1]/table/tbody/tr[1]/td[1]/div')
 recentDataSets.click()
-time.sleep(3)
+time.sleep(8)
 recurrence = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div[2]/div/div/div/div/div/div/div[2]/div[1]/table/tbody/tr[2]/td[1]')
 recurrence.click()
-time.sleep(5)
+time.sleep(8)
 reviewSetResults = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/div[3]/div/div/div/div/div/div[3]/div/div/div/div/div[2]/div/div/div/table/tbody/tr[1]/td[3]/div')
 reviewSetResults.click()
 time.sleep(10)
@@ -61,10 +63,10 @@ def firstfilterRadiologyReports():
   time.sleep(5)
   openFilterDropdownButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[1]/div/div[2]/div')
   openFilterDropdownButton.click()
-  time.sleep(2)
+  time.sleep(5)
   radiologyReportsOption = driver.find_element_by_xpath('//*[@id="VAADIN_COMBOBOX_OPTIONLIST"]/div/div[2]/table/tbody/tr[11]')
   radiologyReportsOption.click()
-  time.sleep(2)
+  time.sleep(5)
   applyFilter = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[1]/div')
   applyFilter.click()
   time.sleep(5)
@@ -74,10 +76,10 @@ def secondfilterRadiologyReports():
   time.sleep(5)
   openFilterDropdownButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[1]/div/div[2]/div')
   openFilterDropdownButton.click()
-  time.sleep(2)
+  time.sleep(5)
   radiologyReportsOption = driver.find_element_by_xpath('//*[@id="VAADIN_COMBOBOX_OPTIONLIST"]/div/div[2]/table/tbody/tr[11]')
   radiologyReportsOption.click()
-  time.sleep(2)
+  time.sleep(5)
   applyFilter = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[1]/div')
   applyFilter.click()
   time.sleep(5)
@@ -85,7 +87,13 @@ def secondfilterRadiologyReports():
 def iterativePatientResults():
   #Filter by PatientId
   for i in range(patientIdArrayLength): 
+    if i > 0:
+      clearFilterButton = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[3]/div/div/div[1]/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div/div[3]/div/div[2]/div/div[2]/div')
+      time.sleep(1)
+      clearFilterButton.click()
     searchPatient = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[1]/div/div[2]/div/div/input')
+    searchPatient.clear()
+    time.sleep(2)
     searchPatient.send_keys(data.patientIdArray[i])
 
     # adding patientId to data
@@ -94,6 +102,7 @@ def iterativePatientResults():
     time.sleep(5)
     patientRow = driver.find_element_by_xpath('//*[@id="sddiscover-1207851718"]/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[1]/div/div[3]/div[1]/table/tbody/tr')
     patientRow.click()
+    time.sleep(5)
     # we may actually not want to filter for reports since we need to do everything relative to all entries
     # filterRadiologyReports()
     # the below variable is storing the date of the patient's first operation
@@ -106,9 +115,9 @@ def iterativePatientResults():
     firstSurgeryDivIndex = 0
      # Get the dates of all report sections so that you can compare them properly
     reportHeaders = driver.find_elements_by_class_name('doc-content')
-    time.sleep(2)
+    time.sleep(3)
     reportHeadersLength = len(reportHeaders)
-    time.sleep(2)
+    time.sleep(3)
     for firstReportHeaderIterator in range(reportHeadersLength):
       allText = reportHeaders[firstReportHeaderIterator].text
       date = allText[0:10]
@@ -250,7 +259,7 @@ iterativePatientResults()
 
 df = pandas.DataFrame(aggregatePatientInfo)
 
-df.to_excel("output3.xlsx")
+df.to_excel("test_output.xlsx")
 
 
 
