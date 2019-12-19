@@ -9,4 +9,6 @@ This python project was my first attempt at building a Selenium web scraper. A t
 ## Future Improvements
 Given that this was my first python project, I made some decisions that, in hindsight, I would now avoid. 
 
-Firstly, I relied heavily on the time.sleep() function to handle asynchronous problems in my program. As a more experienced python programmer now, I would instead use "try except" blocks for this problem. 
+Firstly, I relied heavily on the time.sleep() function to handle asynchronous requests in my program. As a more experienced python programmer, I would now use "try except" blocks for asynchronous processes since "try except" blocks allow for more sophisticaed error handling. Without this error/exception handling in my code, my program will sometimes crash if an asynchronous process does not complete in the time alloted in the time.sleep() function following it. 
+
+Secondly, I would make more efforts to break my code into smaller functions, each with a single purpose (The S in the SOLID Principle). Currently, my code is only divided into a few, very heavy functions. In a code refactor, I would certainly break up these large functions into several smaller functions.
